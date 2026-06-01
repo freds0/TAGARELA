@@ -300,26 +300,40 @@
       <h2>Benchmark Results</h2>
 
       <h3>Automatic Speech Recognition (ASR)</h3>
-      <p>Models trained on TAGARELA and evaluated on Common Voice 17.0 (pt) test set:</p>
+      <p>Models trained on TAGARELA and evaluated on the TAGARELA test set:</p>
       <table class="benchmark-table">
         <thead>
           <tr>
             <th>Model</th>
             <th>WER (%)</th>
+            <th>CER (%)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Canary-1B-Flash</td>
-            <td class="best-result">7.8</td>
+            <td>Whisper Large V3</td>
+            <td>20.91</td>
+            <td>12.42</td>
           </tr>
           <tr>
-            <td>Distil-Whisper</td>
-            <td>9.2</td>
+            <td>Wav2Vec Large FT</td>
+            <td>21.85</td>
+            <td>8.55</td>
           </tr>
           <tr>
-            <td>Parakeet TDT</td>
-            <td>12.3</td>
+            <td>Distil-Whisper FT</td>
+            <td>20.02</td>
+            <td>11.18</td>
+          </tr>
+          <tr>
+            <td>Parakeet v3</td>
+            <td>23.30</td>
+            <td>14.86</td>
+          </tr>
+          <tr>
+            <td>Parakeet v2 FT</td>
+            <td class="best-result">15.18</td>
+            <td class="best-result">7.09</td>
           </tr>
         </tbody>
       </table>
@@ -330,23 +344,29 @@
         <thead>
           <tr>
             <th>Model</th>
-            <th>CER (%)</th>
             <th>WER (%)</th>
+            <th>CER (%)</th>
             <th>MOS</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Orpheus-TTS</td>
-            <td class="best-result">19.32 ± 31.64</td>
-            <td class="best-result">26.81 ± 35.57</td>
-            <td>4.00 ± 0.94</td>
+            <td>Chatterbox</td>
+            <td>0.3111 ± 0.442</td>
+            <td>0.268 ± 0.423</td>
+            <td class="best-result">4.176 ± 0.983</td>
           </tr>
           <tr>
-            <td>Chatterbox</td>
-            <td>23.73 ± 26.17</td>
-            <td>31.50 ± 30.05</td>
-            <td class="best-result">4.53 ± 0.25</td>
+            <td>Orpheus-TTS</td>
+            <td class="best-result">0.095 ± 0.100</td>
+            <td class="best-result">0.046 ± 0.051</td>
+            <td>4.155 ± 1.001</td>
+          </tr>
+          <tr>
+            <td>Ground Truth</td>
+            <td>0.010 ± 0.033</td>
+            <td>0.006 ± 0.018</td>
+            <td>4.231 ± 1.001</td>
           </tr>
         </tbody>
       </table>
