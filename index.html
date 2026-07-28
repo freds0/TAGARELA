@@ -146,6 +146,57 @@
         opacity: 0.6;
         cursor: not-allowed;
       }
+      .model-card {
+        border: 2px solid #e1e4e8;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+      }
+      .model-card.nemo {
+        border-color: #155799;
+      }
+      .model-card.onnx {
+        border-color: #159957;
+      }
+      .model-card h3 {
+        margin-top: 0;
+      }
+      .model-card .model-meta {
+        color: #606c71;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      .tag-onnx {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .tag-nemo {
+        background: #ede7f6;
+        color: #4527a0;
+      }
+      .model-btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.25rem 0.5rem 0.75rem 0;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #155799 0%, #159957 100%);
+        color: #fff;
+        font-size: 0.9rem;
+        text-decoration: none;
+      }
+      .model-btn:hover {
+        color: #fff;
+        opacity: 0.85;
+        text-decoration: none;
+      }
+      .code-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #606c71;
+        margin: 1rem 0 0.4rem 0;
+      }
     </style>
   </head>
   <body>
@@ -163,7 +214,7 @@
       <center>
         <a href="https://huggingface.co/datasets/freds0/TAGARELA" class="btn2" target="_blank">Dataset</a>
         <a href="https://arxiv.org/abs/2603.15326" class="btn2" target="_blank">Paper</a>
-        <a href="#" class="btn2 coming-soon" title="Coming Soon">Models (Coming Soon)</a>
+        <a href="#models" class="btn2">Models</a>
       </center>      
 
       <br><br>
@@ -372,6 +423,80 @@
         <div style="flex: 1; min-width: 250px; margin: 0 0.5rem;">
           <img src="images/si_sdr.png" alt="SI-SDR Distribution" style="width: 100%; height: auto; border-radius: 6px;">
         </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- Models -->
+      <h2 id="models">Models</h2>
+      <p>
+        The ASR model fine-tuned on TAGARELA is publicly available on the Hugging Face Hub in two formats: the original <strong>NeMo</strong> checkpoint and an <strong>ONNX</strong> export for lightweight, framework-independent inference. Both models expect <strong>16 kHz mono</strong> audio.
+      </p>
+
+      <!-- NeMo checkpoint -->
+      <div class="model-card nemo">
+        <h3>Parakeet TDT 0.6B v3 pt-BR (NeMo)</h3>
+        <p class="model-meta">
+          <span class="tag tag-asr">ASR</span>
+          <span class="tag tag-nemo">NVIDIA NeMo</span>
+          <span class="tag tag-asr">FP32</span>
+          <br>
+          NVIDIA Parakeet TDT 0.6B v3 fine-tuned for Brazilian Portuguese on TAGARELA podcast data, with punctuation and synthetic data augmentation.
+        </p>
+        <a class="model-btn" href="https://huggingface.co/alexandreacff/parakeet-tdt-0.6b-v3-ptBR-plus" target="_blank">Download on Hugging Face</a>
+
+        <p class="code-label">Installation</p>
+        <pre><code>pip install -U "nemo_toolkit[asr]" huggingface_hub</code></pre>
+
+        <p class="code-label">Inference</p>
+        <pre><code>import nemo.collections.asr as nemo_asr
+from huggingface_hub import hf_hub_download
+
+# Download the .nemo checkpoint from the Hub
+checkpoint = hf_hub_download(
+    repo_id="alexandreacff/parakeet-tdt-0.6b-v3-ptBR-plus",
+    filename="parakeet-tdt-0.6b-v3-datasets-ptbr-e-podcasts-pontuados-e-sintetico.nemo",
+)
+
+# Load the model
+asr_model = nemo_asr.models.ASRModel.restore_from(restore_path=checkpoint)
+asr_model.eval()
+
+# Transcribe a 16 kHz mono audio file
+hypotheses = asr_model.transcribe(["audio.wav"])
+print(hypotheses[0].text)</code></pre>
+      </div>
+
+      <!-- ONNX export -->
+      <div class="model-card onnx">
+        <h3>Parakeet TDT 0.6B v3 pt-BR TAGARELA (ONNX)</h3>
+        <p class="model-meta">
+          <span class="tag tag-asr">ASR</span>
+          <span class="tag tag-onnx">ONNX</span>
+          <span class="tag tag-tts">CPU friendly</span>
+          <br>
+          ONNX export of the fine-tuned checkpoint above, ready for fast inference with <a href="https://github.com/istupakov/onnx-asr" target="_blank">onnx-asr</a> and ONNX Runtime, without a deep learning framework installed. Released under CC BY 4.0.
+        </p>
+        <a class="model-btn" href="https://huggingface.co/alefiury/parakeet-tdt-0.6b-v3-ptBR-TAGARELA-onnx" target="_blank">Download on Hugging Face</a>
+
+        <p class="code-label">Installation</p>
+        <pre><code>pip install "onnx-asr[cpu,hub]"</code></pre>
+
+        <p class="code-label">Inference</p>
+        <pre><code>import onnx_asr
+from huggingface_hub import snapshot_download
+
+# Download the ONNX model files
+model_dir = snapshot_download(
+    repo_id="alefiury/parakeet-tdt-0.6b-v3-ptBR-TAGARELA-onnx",
+    local_dir="./parakeet-tdt-0.6b-v3-ptBR-TAGARELA-onnx",
+)
+
+# Load the model with the NeMo Conformer TDT runtime
+model = onnx_asr.load_model("nemo-conformer-tdt", model_dir)
+
+# Transcribe a 16 kHz mono audio file
+print(model.recognize("audio.wav", language="pt"))</code></pre>
       </div>
 
       <hr class="section-divider">
